@@ -1,0 +1,151 @@
+<!DOCTYPE html><html lang="fr"><head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>BinaryWatch</title>
+<link rel="manifest" href="manifest.webmanifest">
+
+<style id="vars">:root{
+  --bg:#ffffff;
+  --dial:#11161d; --ring:#2b313a; --led-off:#222a33;
+  --text:#c9d1d9; --accent:#8b949e; --shadow:rgba(0,0,0,.35);
+  --led-on:#00e5ff; --led-glow:rgba(0,229,255,.20);
+  --face-dy:0px; --hours-dy:0px; --minutes-dy:0px; --seconds-dy:0px;
+  --label-hx:27px; --label-hy:0px; --label-mx:0px; --label-my:0px; --label-sx:27px; --label-sy:0px;
+  --digital-dy:15px; --digital-opacity:.8;
+  --glow-blur:16px;
+  --glow-spread:6px;
+  --spec1-opacity:.12;
+  --spec2-opacity:.06;
+  --watch-dy:-20px;
+  --star-x:0px;
+  --star-y:3px;
+  --star-size:15px;
+  --star-color:#ffffff;
+  --label-brightness:1.5;
+}</style>
+
+<style>
+html,body{height:100%;margin:0;background:var(--bg);color:var(--text);
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,'Helvetica Neue',Arial,'Noto Sans');}
+.wrap{min-height:100%;display:grid;place-items:center;padding:24px;}
+figure.watch{margin:0;transform:translateY(var(--watch-dy));}
+.watch{width:min(88vw,380px);aspect-ratio:1/1;border-radius:50%;
+  background:radial-gradient(120% 120% at 50% 20%,#0b0f14,var(--dial) 60%);
+  position:relative;box-shadow:0 18px 50px var(--shadow),
+  inset 0 0 0 2px #0f141a,inset 0 0 0 22px #0b0f14;}
+.ring{position:absolute;inset:8px;border-radius:50%;
+  box-shadow:inset 0 0 0 2px var(--ring),inset 0 0 40px rgba(0,0,0,.45);}
+.face{position:absolute;inset:30px;border-radius:50%;
+  display:grid;grid-template-rows:1fr 1fr 1fr;align-items:center;justify-items:center;
+  gap:min(2.8vh,14px);transform:translateY(var(--face-dy));}
+.row{width:88%;display:grid;grid-auto-flow:column;justify-content:center;align-items:center;
+  gap:clamp(8px,2.2vw,14px);position:relative;}
+#row-hours{transform:translateY(var(--hours-dy));}
+#row-minutes{transform:translateY(var(--minutes-dy));}
+#row-seconds{transform:translateY(var(--seconds-dy));}
+.label{position:absolute;left:-8px;font-size:clamp(10px,2.4vw,12px);
+  color:var(--accent);letter-spacing:.08em;text-transform:uppercase;user-select:none;
+  font-family:Arial, sans-serif;filter:brightness(var(--label-brightness));}
+#row-hours .label{transform:translate(calc(-100% + var(--label-hx)),var(--label-hy));}
+#row-minutes .label{transform:translate(calc(-100% + var(--label-mx)),var(--label-my));}
+#row-seconds .label{transform:translate(calc(-100% + var(--label-sx)),var(--label-sy));}
+
+/* LED */
+.led{width:clamp(18px,4.8vw,26px);aspect-ratio:1/1;border-radius:50%;
+  background:var(--led-off);box-shadow:0 3px 8px rgba(0,0,0,.35);position:relative;overflow:hidden;}
+.led.on{background:var(--led-on);
+  box-shadow:0 0 var(--glow-blur) var(--glow-spread) var(--led-glow),
+  inset 0 -1px 3px rgba(0,0,0,.22);}
+.led.on::before{content:"";position:absolute;inset:0;border-radius:50%;
+  background:radial-gradient(62% 62% at 45% 35%,rgb(255 255 255 / var(--spec1-opacity)),transparent 66%);pointer-events:none;}
+.led.on::after{content:"";position:absolute;inset:0;border-radius:50%;
+  background:radial-gradient(85% 85% at 50% 50%,transparent 60%,rgb(255 255 255 / var(--spec2-opacity)) 74%,transparent 82%);pointer-events:none;}
+
+.digital{position:absolute;left:50%;bottom:14px;transform:translate(-50%,var(--digital-dy));
+  font:300 clamp(14px,3.2vw,16px)/1.1 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  color:#fff;opacity:var(--digital-opacity);user-select:none;letter-spacing:.02em;}
+
+/* Bouton étoile style Mont-Blanc */
+.color-star{
+  position:absolute;top:calc(50% - var(--star-y));left:calc(100% + var(--star-x));
+  transform:translateY(-50%);
+  width:var(--star-size);height:var(--star-size);
+  background:
+    radial-gradient(circle at 50% 15%, var(--star-color) 40%, transparent 42%),
+    radial-gradient(circle at 85% 35%, var(--star-color) 40%, transparent 42%),
+    radial-gradient(circle at 85% 70%, var(--star-color) 40%, transparent 42%),
+    radial-gradient(circle at 50% 90%, var(--star-color) 40%, transparent 42%),
+    radial-gradient(circle at 15% 70%, var(--star-color) 40%, transparent 42%),
+    radial-gradient(circle at 15% 35%, var(--star-color) 40%, transparent 42%);
+  background-size:100% 100%;
+  background-repeat:no-repeat;
+  border-radius:50%;
+  border:none;
+  cursor:pointer;
+  box-shadow:0 2px 6px rgba(0,0,0,.25);
+}
+</style>
+</head>
+
+<body>
+<main class="wrap">
+  <figure class="watch" role="img" aria-label="BinaryWatch — H (heures) / M (minutes) / S (secondes)">
+    <div class="ring"></div>
+    <div class="face">
+      <div class="row" id="row-hours"><span class="label">H</span>
+        <div class="led" data-bit="16"></div><div class="led" data-bit="8"></div>
+        <div class="led" data-bit="4"></div><div class="led" data-bit="2"></div><div class="led" data-bit="1"></div>
+      </div>
+      <div class="row" id="row-minutes"><span class="label">M</span>
+        <div class="led" data-bit="32"></div><div class="led" data-bit="16"></div>
+        <div class="led" data-bit="8"></div><div class="led" data-bit="4"></div>
+        <div class="led" data-bit="2"></div><div class="led" data-bit="1"></div>
+        <button id="colorStar" class="color-star" aria-label="Changer la couleur des LED" title="Couleur LED"></button>
+      </div>
+      <div class="row" id="row-seconds"><span class="label">S</span>
+        <div class="led" data-bit="32"></div><div class="led" data-bit="16"></div>
+        <div class="led" data-bit="8"></div><div class="led" data-bit="4"></div>
+        <div class="led" data-bit="2"></div><div class="led" data-bit="1"></div>
+      </div>
+      <div class="digital" id="digitalTime">00:00:00</div>
+    </div>
+  </figure>
+</main>
+
+<script>
+const rowH=[...document.querySelectorAll('#row-hours .led')];
+const rowM=[...document.querySelectorAll('#row-minutes .led')];
+const rowS=[...document.querySelectorAll('#row-seconds .led')];
+function setRow(row,v){for(const el of row){const b=+el.dataset.bit;el.classList.toggle('on',(v & b)!==0);}}
+(function loop(){const d=new Date();setRow(rowH,d.getHours());setRow(rowM,d.getMinutes());setRow(rowS,d.getSeconds());setTimeout(loop, Math.max(10, 1000-(Date.now()%1000)+2));})();
+
+const digi=document.getElementById('digitalTime');function pad(n){return(n<10?'0':'')+n;}
+(function t(){const d=new Date();digi.textContent=pad(d.getHours())+':'+pad(d.getMinutes())+':'+pad(d.getSeconds());setTimeout(t, Math.max(10, 1000-(Date.now()%1000)+2));})();
+
+/* Bouton couleur étoile */
+const colorStar=document.getElementById('colorStar');
+const schemes=[
+  {led:'#00e5ff',glow:'rgba(0,229,255,.20)'},
+  {led:'#ff00ff',glow:'rgba(255,0,255,.20)'},
+  {led:'#00ff00',glow:'rgba(0,255,0,.20)'},
+  {led:'#ffff00',glow:'rgba(255,255,0,.20)'}
+];
+let idx=0;
+function applyScheme(i){
+  const s=schemes[i%schemes.length];
+  document.documentElement.style.setProperty('--led-on',s.led);
+  document.documentElement.style.setProperty('--led-glow',s.glow);
+}
+colorStar.addEventListener('click',()=>{idx=(idx+1)%schemes.length;applyScheme(idx);});
+</script>
+
+<script>
+if ("serviceWorker" in navigator && window.location.protocol === "https:" && !window.location.hostname.includes("claudeusercontent")) {
+  navigator.serviceWorker
+    .register("sw.js")
+    .then(() => console.log("✅ Service Worker enregistré"))
+    .catch(err => console.error("❌ Erreur SW:", err));
+}
+</script>
+
+</body></html>
