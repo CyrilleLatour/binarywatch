@@ -1,4 +1,4 @@
-const CACHE='binarywatch-v3';
+const CACHE='binarywatch-v4';
 const ASSETS=[
   './',
   './index.html',

@@ -19,7 +19,7 @@
   --watch-dy:-20px;
   --star-x:0px;
   --star-y:3px;
-  --star-size:15px;
+  --star-size:22px;
   --star-color:var(--led-on);
   --label-brightness:1.5;
 }</style>
@@ -105,17 +105,17 @@ figure.watch{margin:0;transform:translateY(var(--watch-dy));}
   cursor:pointer;z-index:10;
   transition:border-color 0.3s;
 }
-.stars-btn.active{
+/*REMOVED*/.stars-btn-DISABLED{
   border-color:transparent;
 }
-.stars-btn::before{
+.stars-btn-DISABLED::before{
   content:"";position:absolute;inset:-1px;
   background:#fff;
   clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);
   opacity:0;
   transition:opacity 0.3s;
 }
-.stars-btn.active::before{
+.stars-btn-DISABLED.active::before{
   opacity:1;
 }
 .stars-label{
@@ -132,7 +132,7 @@ figure.watch{margin:0;transform:translateY(var(--watch-dy));}
 <main class="wrap">
   <figure class="watch" role="img" aria-label="BinaryWatch — H (heures) / M (minutes) / S (secondes)">
     <div class="stars-canvas" id="starsCanvas" style="display:none"></div>
-    <button class="stars-btn" id="starsBtn" aria-label="Toggle stars" title="Stars"><svg viewBox="0 0 24 24" width="100%" height="100%" fill="none" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"><polygon points="12,2 15,9 22,9 16.5,14 18.5,21 12,17 5.5,21 7.5,14 2,9 9,9"/></svg></button>
+    <button class="stars-btn" id="starsBtn" aria-label="Toggle stars" title="Stars"><svg viewBox="0 0 24 24" width="100%" height="100%" fill="none" stroke="#fff" stroke-width="2" stroke-linejoin="round"><polygon points="12,2 15,9 22,9 16.5,14 18.5,21 12,17 5.5,21 7.5,14 2,9 9,9"/></svg></button>
     <div class="ring"></div>
     <div class="face">
       <div class="row" id="row-hours"><span class="label">H</span>
