@@ -1,0 +1,21 @@
+{
+  "name": "Binary Watch",
+  "short_name": "BinaryWatch",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#11161d",
+  "theme_color": "#11161d",
+  "icons": [
+    {
+      "src": "icons/app-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/app-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "description": "A minimalistic binary watch application that displays the current time in binary format."
+}
